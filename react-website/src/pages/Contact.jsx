@@ -4,6 +4,7 @@ import contact from '../assets/contact.webp';
 
 const Contact = () => {
   // State to store the phone number input
+  URL = "https://project1-0jyb.onrender.com";
   const [phoneNumber, setPhoneNumber] = useState('');
   const token = localStorage.getItem('token');
   // Function to handle form submission
@@ -16,7 +17,7 @@ const Contact = () => {
     }
 
     try {
-      const response = await fetch('http://localhost:5001/api/contact/submit', {
+      const response = await fetch(URL+'/api/contact/submit', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
