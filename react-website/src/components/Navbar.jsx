@@ -11,13 +11,15 @@ import Profile from './Profile';
 
 const Navbar = () => {
     const [visible, setVisible] = useState(false);
-  const [imagesCount, setImagesCount] = useState(0);
+  // const [imagesCount, setImagesCount] = useState(0);
+  const imageCount = localStorage.getItem('imageCount');
   const token = localStorage.getItem('token');
   const navigate = useNavigate();
   // const [userData, setUserData] = useState(null);
   const userData = localStorage.getItem('username');
   const logout = () => {
     localStorage.removeItem('token');
+    localStorage.setItem('imageCount', '0');
     navigate('/login');
   };
     // useEffect(() => {
@@ -96,7 +98,7 @@ const Navbar = () => {
             </Link> */}
             <Link to="/userimages" className='relative'>
              <img src={photo} alt="" className='w-6 cursor-pointer'/>
-             <p className='absolute right-[-5px] w-4 text-center leading-4 bg-black text-white aspect-square rounded texr-[8px]'>{imagesCount}</p>
+             <p className='absolute right-[-5px] w-4 text-center leading-4 bg-black text-white aspect-square rounded texr-[8px]'>{imageCount}</p>
             </Link>
             <img onClick={()=>setVisible(true)} src={menu} alt="" className='w-6 cursor-pointer'/>
         </div>

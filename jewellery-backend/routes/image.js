@@ -1,35 +1,40 @@
+
 const express = require('express');
-const multer = require('multer');
 const authMiddleware = require('../middleware/authMiddleware');
 const Image = require('../models/Image');
 const router = express.Router();
+const multer = require('multer');
 
-// Configure Multer to handle image uploads
-const storage = multer.memoryStorage();
-const upload = multer({ storage });
-
+const upload = multer({ limits: { fileSize: 1024 * 1024 * 10 } }); // 10MB limit
 // Upload an image
-router.post('/upload', authMiddleware, upload.single('image'), async (req, res) => {
+router.post('/upload', authMiddleware, async (req, res) => {
   try {
-    if (!req.file) {
-      return res.status(400).json({ message: 'No file uploaded' });
+    const { image } = req.body;
+    if (!image) {
+      return res.status(400).json({ message: 'No image provided' });
     }
-    const image = new Image({ user: req.user._id, imageUrl: req.file.buffer.toString('base64') });
-    await image.save();
 
-    // Optionally push the image into the user's images array if you have that set up
-    req.user.images.push(image);
+    // Save image data in base64 format
+    const newImage = new Image({
+      user: req.user._id,
+      imageUrl: image,
+    });
+
+    await newImage.save();
+
+    // Optionally add to user's images array
+    req.user.images.push(newImage._id);
     await req.user.save();
 
-    res.json({ message: 'Image uploaded successfully', imageUrl: image.imageUrl });
+    res.json({ message: 'Image uploaded successfully', imageUrl: newImage.imageUrl });
   } catch (error) {
-    console.error('Error uploading image:', error); // Log the error for debugging
+    console.error('Error uploading image:', error);
     res.status(500).json({ message: 'Server error' });
   }
 });
 
 
-// Get user images
+// Retrieve user images
 router.get('/my-images', authMiddleware, async (req, res) => {
   try {
     const images = await Image.find({ user: req.user._id });
